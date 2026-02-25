@@ -6,19 +6,14 @@ namespace Mission08.Controllers;
 
 public class HomeController : Controller
 {
+    public Mission08Context _context;
+
+    public HomeController(Mission08Context temp)
+    {
+        _context = temp;
+    }
     public IActionResult Index()
     {
         return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

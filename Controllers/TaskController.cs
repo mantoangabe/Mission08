@@ -19,6 +19,7 @@ namespace Mission08.Controllers
         // Create
         public IActionResult Create()
         {
+            ViewBag.Categories = new List<string>() { "Home", "School", "Work", "Church"};
             return View();
         }
 
@@ -34,6 +35,7 @@ namespace Mission08.Controllers
         // Edit
         public IActionResult Edit(int id)
         {
+            ViewBag.Categories = new List<string>() { "Home", "School", "Work", "Church"};
             var task = _context.Tasks.FirstOrDefault(x => x.id == id);
             return View(task);
         }

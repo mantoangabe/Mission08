@@ -57,7 +57,7 @@ namespace Mission08.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Completed(int id)
+        public IActionResult Complete(int id)
         {
             var task = _context.Tasks.FirstOrDefault(x => x.id == id);
             task.IsCompleted = true;

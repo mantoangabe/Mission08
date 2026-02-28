@@ -3,137 +3,14 @@
 @{
     ViewData["Title"] = "Quadrants";
 
+    // TaskController.Index already filters incomplete,
+    // but this keeps the view safe if that ever changes.
     var active = Model.Where(t => !t.IsCompleted);
 
-    var q1 = active.Where(t => t.Quadrant == "1").ToList();
-    var q2 = active.Where(t => t.Quadrant == "2").ToList();
-    var q3 = active.Where(t => t.Quadrant == "3").ToList();
-    var q4 = active.Where(t => t.Quadrant == "4").ToList();
-}
-
-<h2 class="text-center mb-4">Time Management Matrix</h2>
-
-<div class="container">
-    <div class="row">
-
-        <!-- Quadrant 1 -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-danger h-100">
-                <div class="card-header bg-danger text-white fw-bold">
-                    Quadrant 1 (Important / Urgent)
-                </div>
-                <div class="card-body">
-                    @foreach (var t in q1)
-                    {
-                        <div class="mb-3 p-2 border rounded">
-
-                            <strong>@t.TaskName</strong><br />
-                            <small>Category: @t.Category</small><br />
-                            <small>Due: @(t.DueDate?.ToShortDateString())</small>
-
-                            <div class="mt-2 d-flex gap-2">
-
-                                <!-- Complete -->
-                                <form asp-action="Complete" method="post">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-success">Complete</button>
-                                </form>
-
-                                <!-- Edit -->
-                                <a asp-action="Edit"
-                                   asp-route-id="@t.id"
-                                   class="btn btn-sm btn-primary">
-                                    Edit
-                                </a>
-
-                                <!-- Delete -->
-                                <form asp-action="Delete" method="post">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-
-                            </div>
-                        </div>
-                    }
-
-                    @if (!q1.Any())
-                    {
-                        <p class="text-muted">No tasks</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Quadrant 2 -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-warning h-100">
-                <div class="card-header bg-warning text-dark fw-bold">
-                    Quadrant 2 (Important / Not Urgent)
-                </div>
-                <div class="card-body">
-                    @foreach (var t in q2)
-                    {
-                        <div class="mb-3 p-2 border rounded">
-                            <strong>@t.TaskName</strong>
-                        </div>
-                    }
-                    @if (!q2.Any())
-                    {
-                        <p class="text-muted">No tasks</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Quadrant 3 -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-info h-100">
-                <div class="card-header bg-info text-white fw-bold">
-                    Quadrant 3 (Not Important / Urgent)
-                </div>
-                <div class="card-body">
-                    @foreach (var t in q3)
-                    {
-                        <div class="mb-3 p-2 border rounded">
-                            <strong>@t.TaskName</strong>
-                        </div>
-                    }
-                    @if (!q3.Any())
-                    {
-                        <p class="text-muted">No tasks</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Quadrant 4 -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-secondary h-100">
-                <div class="card-header bg-secondary text-white fw-bold">
-                    Quadrant 4 (Not Important / Not Urgent)
-                </div>
-                <div class="card-body">
-                    @foreach (var t in q4)
-                    {
-                        <div class="mb-3 p-2 border rounded">
-                            <strong>@t.TaskName</strong>
-                        </div>
-                    }
-                    @if (!q4.Any())
-                    {
-                        <p class="text-muted">No tasks</p>
-                    }
-                </div>@model IEnumerable<Mission08.Models.Task>
-
-@{
-    ViewData["Title"] = "Quadrants";
-
-    var active = Model.Where(t => !t.IsCompleted);
-
-    var q1 = active.Where(t => t.Quadrant == "1").ToList();
-    var q2 = active.Where(t => t.Quadrant == "2").ToList();
-    var q3 = active.Where(t => t.Quadrant == "3").ToList();
-    var q4 = active.Where(t => t.Quadrant == "4").ToList();
+    var q1 = active.Where(t => t.Quadrant == "1").OrderBy(t => t.DueDate ?? DateTime.MaxValue).ToList();
+    var q2 = active.Where(t => t.Quadrant == "2").OrderBy(t => t.DueDate ?? DateTime.MaxValue).ToList();
+    var q3 = active.Where(t => t.Quadrant == "3").OrderBy(t => t.DueDate ?? DateTime.MaxValue).ToList();
+    var q4 = active.Where(t => t.Quadrant == "4").OrderBy(t => t.DueDate ?? DateTime.MaxValue).ToList();
 }
 
 <h2 class="text-center mb-4">Time Management Matrix</h2>
@@ -146,25 +23,19 @@
             <div class="card border-danger h-100">
                 <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Quadrant 1 (Important / Urgent)</span>
-
-                    <!-- Update button goes to Add/Edit view -->
-                    <a class="btn btn-light btn-sm"
-                       asp-action="Create">
-                        Update
-                    </a>
+                    <a class="btn btn-light btn-sm" asp-controller="Task" asp-action="Create">Update</a>
                 </div>
-
                 <div class="card-body">
                     @if (!q1.Any())
                     {
-                        <p class="text-muted">No tasks</p>
+                        <p class="text-muted mb-0">No tasks</p>
                     }
                     else
                     {
                         @foreach (var t in q1)
                         {
                             <div class="border rounded p-2 mb-2 d-flex justify-content-between align-items-start">
-                                <div>
+                                <div class="me-2">
                                     <div class="fw-semibold">@t.TaskName</div>
                                     <small class="text-muted">
                                         Category: @t.Category
@@ -175,12 +46,27 @@
                                     </small>
                                 </div>
 
-                                <!-- Delete (POST) -->
-                                <form asp-action="Delete" method="post"
-                                      onsubmit="return confirm('Delete this task?');">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-success"
+                                       asp-controller="Task"
+                                       asp-action="Complete"
+                                       asp-route-id="@t.id">
+                                        Complete
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Task"
+                                       asp-action="Edit"
+                                       asp-route-id="@t.id">
+                                        Edit
+                                    </a>
+
+                                    <form asp-controller="Task" asp-action="Delete" method="post" class="m-0"
+                                          onsubmit="return confirm('Delete this task?');">
+                                        <input type="hidden" name="id" value="@t.id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         }
                     }
@@ -193,24 +79,19 @@
             <div class="card border-warning h-100">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Quadrant 2 (Important / Not Urgent)</span>
-
-                    <a class="btn btn-light btn-sm"
-                       asp-action="Create">
-                        Update
-                    </a>
+                    <a class="btn btn-light btn-sm" asp-controller="Task" asp-action="Create">Update</a>
                 </div>
-
                 <div class="card-body">
                     @if (!q2.Any())
                     {
-                        <p class="text-muted">No tasks</p>
+                        <p class="text-muted mb-0">No tasks</p>
                     }
                     else
                     {
                         @foreach (var t in q2)
                         {
                             <div class="border rounded p-2 mb-2 d-flex justify-content-between align-items-start">
-                                <div>
+                                <div class="me-2">
                                     <div class="fw-semibold">@t.TaskName</div>
                                     <small class="text-muted">
                                         Category: @t.Category
@@ -221,11 +102,27 @@
                                     </small>
                                 </div>
 
-                                <form asp-action="Delete" method="post"
-                                      onsubmit="return confirm('Delete this task?');">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-success"
+                                       asp-controller="Task"
+                                       asp-action="Complete"
+                                       asp-route-id="@t.id">
+                                        Complete
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Task"
+                                       asp-action="Edit"
+                                       asp-route-id="@t.id">
+                                        Edit
+                                    </a>
+
+                                    <form asp-controller="Task" asp-action="Delete" method="post" class="m-0"
+                                          onsubmit="return confirm('Delete this task?');">
+                                        <input type="hidden" name="id" value="@t.id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         }
                     }
@@ -238,24 +135,19 @@
             <div class="card border-info h-100">
                 <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Quadrant 3 (Not Important / Urgent)</span>
-
-                    <a class="btn btn-light btn-sm"
-                       asp-action="Create">
-                        Update
-                    </a>
+                    <a class="btn btn-light btn-sm" asp-controller="Task" asp-action="Create">Update</a>
                 </div>
-
                 <div class="card-body">
                     @if (!q3.Any())
                     {
-                        <p class="text-muted">No tasks</p>
+                        <p class="text-muted mb-0">No tasks</p>
                     }
                     else
                     {
                         @foreach (var t in q3)
                         {
                             <div class="border rounded p-2 mb-2 d-flex justify-content-between align-items-start">
-                                <div>
+                                <div class="me-2">
                                     <div class="fw-semibold">@t.TaskName</div>
                                     <small class="text-muted">
                                         Category: @t.Category
@@ -266,11 +158,27 @@
                                     </small>
                                 </div>
 
-                                <form asp-action="Delete" method="post"
-                                      onsubmit="return confirm('Delete this task?');">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-success"
+                                       asp-controller="Task"
+                                       asp-action="Complete"
+                                       asp-route-id="@t.id">
+                                        Complete
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Task"
+                                       asp-action="Edit"
+                                       asp-route-id="@t.id">
+                                        Edit
+                                    </a>
+
+                                    <form asp-controller="Task" asp-action="Delete" method="post" class="m-0"
+                                          onsubmit="return confirm('Delete this task?');">
+                                        <input type="hidden" name="id" value="@t.id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         }
                     }
@@ -283,24 +191,19 @@
             <div class="card border-secondary h-100">
                 <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Quadrant 4 (Not Important / Not Urgent)</span>
-
-                    <a class="btn btn-light btn-sm"
-                       asp-action="Create">
-                        Update
-                    </a>
+                    <a class="btn btn-light btn-sm" asp-controller="Task" asp-action="Create">Update</a>
                 </div>
-
                 <div class="card-body">
                     @if (!q4.Any())
                     {
-                        <p class="text-muted">No tasks</p>
+                        <p class="text-muted mb-0">No tasks</p>
                     }
                     else
                     {
                         @foreach (var t in q4)
                         {
                             <div class="border rounded p-2 mb-2 d-flex justify-content-between align-items-start">
-                                <div>
+                                <div class="me-2">
                                     <div class="fw-semibold">@t.TaskName</div>
                                     <small class="text-muted">
                                         Category: @t.Category
@@ -311,20 +214,31 @@
                                     </small>
                                 </div>
 
-                                <form asp-action="Delete" method="post"
-                                      onsubmit="return confirm('Delete this task?');">
-                                    <input type="hidden" name="id" value="@t.id" />
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-success"
+                                       asp-controller="Task"
+                                       asp-action="Complete"
+                                       asp-route-id="@t.id">
+                                        Complete
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Task"
+                                       asp-action="Edit"
+                                       asp-route-id="@t.id">
+                                        Edit
+                                    </a>
+
+                                    <form asp-controller="Task" asp-action="Delete" method="post" class="m-0"
+                                          onsubmit="return confirm('Delete this task?');">
+                                        <input type="hidden" name="id" value="@t.id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         }
                     }
                 </div>
-            </div>
-        </div>
-
-    </div>
-</div>
             </div>
         </div>
 

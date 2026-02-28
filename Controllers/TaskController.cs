@@ -13,14 +13,14 @@ namespace Mission08.Controllers
         public IActionResult Index()
         {
             var incompleteTasks = _context.Tasks.Where(x => x.IsCompleted == false);
-            return View(incompleteTasks);
+            return View("~/Views/Home/Quadrants.cshtml", incompleteTasks);
         }
 
         // Create
         public IActionResult Create()
         {
             ViewBag.Categories = new List<string>() { "Home", "School", "Work", "Church"};
-            return View();
+            return View("~/Views/Home/Add.cshtml");
         }
 
         [HttpPost]
@@ -37,7 +37,7 @@ namespace Mission08.Controllers
         {
             ViewBag.Categories = new List<string>() { "Home", "School", "Work", "Church"};
             var task = _context.Tasks.FirstOrDefault(x => x.id == id);
-            return View(task);
+            return View("~/Views/Home/Edit.cshtml", task);
         }
         [HttpPost]
         public IActionResult Edit(Mission08.Models.Task existingTask)
